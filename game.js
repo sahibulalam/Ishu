@@ -1068,7 +1068,7 @@ function triggerLevelClear() {
             setTimeout(() => {
                 const titleText = currentLevel === 1 ? "A Grassy Valley Embrace!" : "A Warm Bridge Reunion!";
                 const msgText = currentLevel === 1 
-                    ? '"ONNEK ONNEK ONEEK HAMMIII"'
+                    ? '"HI Mr. Dracula, You Okey na Onnek onnek onnek hami"'
                     : '"Oh Mr. Dracula, crossing that sizzling lava for me... You are my hero!"';
                 
                 document.getElementById('clear-title').innerText = titleText;
