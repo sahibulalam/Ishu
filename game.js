@@ -612,25 +612,47 @@ function setupMenuHandlers() {
         btn.addEventListener('click', () => btn.blur());
     });
 
-    // Native Fullscreen API Toggle
+    // Native Fullscreen API Toggle (Targeting documentElement for robust aspect-ratio scaling)
     const fsBtn = document.getElementById('btn-fullscreen');
     if (fsBtn) {
         fsBtn.onclick = () => {
-            const container = document.getElementById('app-container');
-            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                const req = container.requestFullscreen || container.webkitRequestFullscreen;
+            const target = document.documentElement;
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+                const req = target.requestFullscreen || target.webkitRequestFullscreen || target.mozRequestFullScreen || target.msRequestFullscreen;
                 if (req) {
-                    req.call(container).catch(err => {
+                    req.call(target).catch(err => {
                         console.log(`Fullscreen error: ${err.message}`);
                     });
                 }
             } else {
-                const exit = document.exitFullscreen || document.webkitExitFullscreen;
+                const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
                 if (exit) {
                     exit.call(document);
                 }
             }
         };
+
+        // Update button icon/title on fullscreen change
+        const updateFullscreenUI = () => {
+            const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+            const svgPath = fsBtn.querySelector('path');
+            if (svgPath) {
+                if (isFS) {
+                    // Exit fullscreen path (arrows pointing inward)
+                    svgPath.setAttribute('d', 'M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z');
+                    fsBtn.setAttribute('title', 'Exit Fullscreen');
+                } else {
+                    // Enter fullscreen path (arrows pointing outward)
+                    svgPath.setAttribute('d', 'M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z');
+                    fsBtn.setAttribute('title', 'Toggle Fullscreen');
+                }
+            }
+        };
+
+        document.addEventListener('fullscreenchange', updateFullscreenUI);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
+        document.addEventListener('mozfullscreenchange', updateFullscreenUI);
+        document.addEventListener('MSFullscreenChange', updateFullscreenUI);
     }
 
     const startMenu = document.getElementById('start-menu');

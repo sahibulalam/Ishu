@@ -423,7 +423,7 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    padding: 15px 25px;
+    padding: 15px 75px 15px 25px; /* Shift right contents to avoid overlap with fullscreen button */
     display: flex;
     justify-content: space-between;
     align-items: center;
