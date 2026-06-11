@@ -882,10 +882,14 @@ function startTimer() {
     stopTimer();
     timerInterval = setInterval(() => {
         if (gameState === STATES.PLAYING) {
-            timeRemaining--;
-            document.getElementById('hud-timer-val').innerText = timeRemaining.toString().padStart(3, '0');
-            if (timeRemaining <= 0) {
-                damagePlayer(999); // Instantly defeat
+            if (currentLevel !== 1) { // No timer countdown on Easy level
+                timeRemaining--;
+                document.getElementById('hud-timer-val').innerText = timeRemaining.toString().padStart(3, '0');
+                if (timeRemaining <= 0) {
+                    damagePlayer(999); // Instantly defeat
+                }
+            } else {
+                document.getElementById('hud-timer-val').innerText = "INF";
             }
         }
     }, 1000);
@@ -902,7 +906,11 @@ function updateHUD() {
     document.getElementById('hud-level-val').innerText = currentLevel.toString().padStart(2, '0');
     document.getElementById('hud-challenge-val').innerText = LEVELS[currentLevel].challenge;
     document.getElementById('hud-coins-val').innerText = score.toString().padStart(2, '0');
-    document.getElementById('hud-timer-val').innerText = timeRemaining.toString().padStart(3, '0');
+    if (currentLevel === 1) {
+        document.getElementById('hud-timer-val').innerText = "INF";
+    } else {
+        document.getElementById('hud-timer-val').innerText = timeRemaining.toString().padStart(3, '0');
+    }
     
     // Update Hearts HTML
     const hearts = document.querySelectorAll('#hud-hearts-container .heart');
@@ -918,6 +926,17 @@ function updateHUD() {
 // DAMAGE AND HEAL
 function damagePlayer(amount) {
     if (player.invulnerableFrames > 0) return;
+    
+    if (currentLevel === 1) {
+        // Play hurt sound, trigger invulnerability, and knockback, but do not reduce health on Easy level
+        player.invulnerableFrames = player.invulnerableDuration;
+        player.state = 'hurt';
+        sfx.playHurt();
+        
+        player.vy = -5;
+        player.vx = player.facing === 'right' ? -3 : 3;
+        return;
+    }
     
     player.health -= amount;
     player.invulnerableFrames = player.invulnerableDuration;
