@@ -464,17 +464,17 @@ const LEVELS = {
                 { x: 2550, y: 340, w: 200, h: 30, type: 'ruins' },
                 
                 // Moving Platforms: { x, y, w, h, type, isMoving: true, rangeX, rangeY, speed, startX, startY }
-                { x: 1050, y: 360, w: 120, h: 20, type: 'stone', isMoving: true, rangeX: 0, rangeY: 100, speed: 0.03, startX: 1050, startY: 300 },
-                { x: 1650, y: 250, w: 120, h: 20, type: 'stone', isMoving: true, rangeX: 120, rangeY: 0, speed: 0.02, startX: 1650, startY: 250 },
-                { x: 2250, y: 320, w: 120, h: 20, type: 'stone', isMoving: true, rangeX: 0, rangeY: 120, speed: 0.025, startX: 2250, startY: 260 }
+                { x: 1050, y: 360, w: 120, h: 20, type: 'stone', isMoving: true, rangeX: 0, rangeY: 50, speed: 0.012, startX: 1050, startY: 300 },
+                { x: 1650, y: 250, w: 120, h: 20, type: 'stone', isMoving: true, rangeX: 70, rangeY: 0, speed: 0.01, startX: 1650, startY: 250 },
+                { x: 2250, y: 320, w: 120, h: 20, type: 'stone', isMoving: true, rangeX: 0, rangeY: 60, speed: 0.01, startX: 2250, startY: 260 }
             ];
 
-            // Enemies (Fiery Red Slimes)
+            // Enemies (Fiery Red Slimes - slowed down to normal speed)
             enemies = [
-                { x: 550, y: 310, vx: 2, limitL: 510, limitR: 670, type: 'fireslime', size: 16 },
-                { x: 1400, y: 280, vx: 2.2, limitL: 1360, limitR: 1530, type: 'fireslime', size: 18 },
-                { x: 2000, y: 240, vx: 1.8, limitL: 1960, limitR: 2090, type: 'fireslime', size: 15 },
-                { x: 2950, y: 400, vx: 1.5, limitL: 2870, limitR: 3100, type: 'slime', size: 16 }
+                { x: 550, y: 310, vx: 0.8, limitL: 510, limitR: 670, type: 'fireslime', size: 16 },
+                { x: 1400, y: 280, vx: 0.9, limitL: 1360, limitR: 1530, type: 'fireslime', size: 18 },
+                { x: 2000, y: 240, vx: 0.8, limitL: 1960, limitR: 2090, type: 'fireslime', size: 15 },
+                { x: 2950, y: 400, vx: 0.8, limitL: 2870, limitR: 3100, type: 'slime', size: 16 }
             ];
 
             // Coins
@@ -531,11 +531,11 @@ const LEVELS = {
                 { x: 2550, y: 360, w: 450, h: 200, type: 'final_altar', scaleY: 1 }
             ];
 
-            // Flying cloud enemies
+            // Flying cloud enemies - slowed down to normal speed
             enemies = [
-                { x: 580, y: 280, vx: 1.2, limitL: 560, limitR: 640, type: 'cloudelemental', size: 14 },
-                { x: 1600, y: 200, vx: 2, limitL: 1590, limitR: 1710, type: 'cloudelemental', size: 15 },
-                { x: 1830, y: 260, vx: 1.5, limitL: 1820, limitR: 1910, type: 'cloudelemental', size: 14 }
+                { x: 580, y: 280, vx: 0.5, limitL: 560, limitR: 640, type: 'cloudelemental', size: 14 },
+                { x: 1600, y: 200, vx: 0.7, limitL: 1590, limitR: 1710, type: 'cloudelemental', size: 15 },
+                { x: 1830, y: 260, vx: 0.6, limitL: 1820, limitR: 1910, type: 'cloudelemental', size: 14 }
             ];
 
             // Coins
@@ -1178,9 +1178,9 @@ function gameLoop() {
 
 function updatePhysics() {
     if (gameState === STATES.PLAYING) {
-        // Wind push on Level 3 (reduced to 0.045 for easier control)
+        // Wind push on Level 3 (reduced to 0.008 for gentle thematic drift)
         if (currentLevel === 3) {
-            player.vx -= 0.045; // Continuous leftward drift
+            player.vx -= 0.008; // Continuous leftward drift
         }
 
         // Handle coyote frames and jump buffer decrements
@@ -1298,7 +1298,7 @@ function updatePhysics() {
                     
                     // Trigger crumbling timer if standing on crumble platform
                     if (platform.isCrumbling && platform.crumbleTimer === -1) {
-                        platform.crumbleTimer = 48; // Frames before collapse (easier!)
+                        platform.crumbleTimer = 120; // 2 seconds before collapse (easier!)
                     }
                 } else {
                     player.y += overlapY;
@@ -1409,8 +1409,8 @@ function updateMeteors() {
     if (gameState !== STATES.PLAYING || currentLevel !== 3) return;
     
     meteorTimer++;
-    // Spawn meteor every 90-120 frames ahead of camera view
-    if (meteorTimer > 100) {
+    // Spawn meteor every 220-250 frames ahead of camera view
+    if (meteorTimer > 240) {
         meteorTimer = 0;
         let spawnX = camera.x + camera.width + Math.random() * 200;
         let spawnY = -50;
@@ -1418,9 +1418,9 @@ function updateMeteors() {
         meteors.push({
             x: spawnX,
             y: spawnY,
-            vx: -3.5 - Math.random() * 2,
-            vy: 4 + Math.random() * 2,
-            size: 15 + Math.random() * 10
+            vx: -1.2 - Math.random() * 1.0, // Slower horizontal speed
+            vy: 2.0 + Math.random() * 1.0, // Slower vertical speed
+            size: 12 + Math.random() * 6 // Smaller size
         });
     }
     
