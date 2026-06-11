@@ -318,7 +318,7 @@ const player = {
     health: 5,
     maxHealth: 5,
     invulnerableFrames: 0,
-    invulnerableDuration: 60, // 1 second at 60fps
+    invulnerableDuration: 90, // 1.5 seconds at 60fps (easier!)
     state: 'idle', // idle, running, jumping, hurt, falling
     facing: 'right',
     animFrame: 0,
@@ -413,14 +413,14 @@ const LEVELS = {
                 { x: 2420, y: 320, w: 150, h: 20, type: 'stone' }
             ];
 
-            // Enemies
+            // Enemies (Slower velocities on Level 1 for easy accessibility)
             enemies = [
-                { x: 350, y: 400, vx: 1.5, limitL: 100, limitR: 550, type: 'slime', size: 16 },
-                { x: 900, y: 400, vx: 1.8, limitL: 780, limitR: 1400, type: 'slime', size: 16 },
-                { x: 1200, y: 280, vx: 2, limitL: 1060, limitR: 1190, type: 'slime', size: 14 },
-                { x: 1800, y: 400, vx: 2.2, limitL: 1650, limitR: 2350, type: 'slime', size: 18 },
-                { x: 2000, y: 260, vx: 1.5, limitL: 1910, limitR: 2050, type: 'slime', size: 14 },
-                { x: 2700, y: 400, vx: 2, limitL: 2600, limitR: 2950, type: 'slime', size: 16 }
+                { x: 350, y: 400, vx: 0.8, limitL: 100, limitR: 550, type: 'slime', size: 16 },
+                { x: 900, y: 400, vx: 1.0, limitL: 780, limitR: 1400, type: 'slime', size: 16 },
+                { x: 1200, y: 280, vx: 1.1, limitL: 1060, limitR: 1190, type: 'slime', size: 14 },
+                { x: 1800, y: 400, vx: 1.2, limitL: 1650, limitR: 2350, type: 'slime', size: 18 },
+                { x: 2000, y: 260, vx: 0.8, limitL: 1910, limitR: 2050, type: 'slime', size: 14 },
+                { x: 2700, y: 400, vx: 1.0, limitL: 2600, limitR: 2950, type: 'slime', size: 16 }
             ];
 
             // Coins
@@ -1486,8 +1486,12 @@ function updateEnemies() {
             player.y < ey + eh &&
             player.y + player.height > ey) {
             
-            // Check if jumping on top (Mario squish)
-            if (player.vy > 0 && player.y + player.height - player.vy <= ey + 10) {
+            // Check if jumping on top (Mario squish) - very forgiving bounding box check
+            const playerFeet = player.y + player.height;
+            const enemyTop = ey;
+            const isFallingOrNearTop = player.vy >= -1.5 || (playerFeet - player.vy <= enemyTop + 18);
+            
+            if (isFallingOrNearTop && playerFeet <= enemyTop + 18) {
                 // Kill enemy
                 sfx.playSquish();
                 addSparkles(en.x, en.y - en.size, '#22c55e', 12);
