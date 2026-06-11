@@ -1,5 +1,5 @@
 /**
- * SAHIBUL & ISHITA: A Skyward Bound Odyssey
+ * MR. & MRS. DRACULA: A Skyward Bound Odyssey
  * Core Game Engine and Logic
  */
 
@@ -282,7 +282,7 @@ const menuBgCanvas = document.getElementById('menu-bg-canvas');
 const menuBgCtx = menuBgCanvas.getContext('2d');
 
 // Game Engine Configs
-const GRAVITY = 0.45;
+const GRAVITY = 0.65;
 const FRICTION = 0.85;
 
 // Cameras
@@ -311,7 +311,7 @@ const player = {
     vx: 0,
     vy: 0,
     speed: 4.5,
-    jumpForce: 11.0,
+    jumpForce: 13.5,
     grounded: false,
     coyoteFrames: 0,       // Coyote time frames
     jumpBufferFrames: 0,   // Jump buffering frames
@@ -561,22 +561,22 @@ const LEVELS = {
 // Dialogue Scripting
 const dialogueLibrary = {
     level1Intro: [
-        { name: "Sahibul", text: "Ishita! Can you hear me? I see you on the other side of the valley!", speaker: "sahibul" },
-        { name: "Ishita", text: "Sahibul! Watch out for the bouncing green slimes! Please hurry!", speaker: "ishita" }
+        { name: "Mr. Dracula", text: "Mrs. Dracula! Can you hear me? I see you on the other side of the valley!", speaker: "sahibul" },
+        { name: "Mrs. Dracula", text: "Mr. Dracula! Watch out for the bouncing green slimes! Please hurry!", speaker: "ishita" }
     ],
     level2Intro: [
-        { name: "Sahibul", text: "The temperature is rising! The ground here is gone...", speaker: "sahibul" },
-        { name: "Ishita", text: "It's the ancient lava ruins! Leap across the floating stones carefully!", speaker: "ishita" }
+        { name: "Mr. Dracula", text: "The temperature is rising! The ground here is gone...", speaker: "sahibul" },
+        { name: "Mrs. Dracula", text: "It's the ancient lava ruins! Leap across the floating stones carefully!", speaker: "ishita" }
     ],
     level3Intro: [
-        { name: "Sahibul", text: "We are high in the clouds... The wind is pushing against me!", speaker: "sahibul" },
-        { name: "Ishita", text: "Be careful! The clouds are fragile, and fire meteors are falling from the cosmic rift!", speaker: "ishita" }
+        { name: "Mr. Dracula", text: "We are high in the clouds... The wind is pushing against me!", speaker: "sahibul" },
+        { name: "Mrs. Dracula", text: "Be careful! The clouds are fragile, and fire meteors are falling from the cosmic rift!", speaker: "ishita" }
     ],
     level3Tragedy: [
-        { name: "Sahibul", text: "Ishita! I've cleared the sky pillars! I'm finally here!", speaker: "sahibul" },
-        { name: "Ishita", text: "Oh Sahibul! You actually made it... but wait, the altar! It's shaking!", speaker: "ishita" },
-        { name: "Sahibul", text: "No... The foundation is giving way! Hold on to me!", speaker: "sahibul" },
-        { name: "Ishita", text: "SAHIBUL!!!! NO!!!", speaker: "ishita" }
+        { name: "Mr. Dracula", text: "Mrs. Dracula! I've cleared the sky pillars! I'm finally here!", speaker: "sahibul" },
+        { name: "Mrs. Dracula", text: "Oh Mr. Dracula! You actually made it... but wait, the altar! It's shaking!", speaker: "ishita" },
+        { name: "Mr. Dracula", text: "No... The foundation is giving way! Hold on to me!", speaker: "sahibul" },
+        { name: "Mrs. Dracula", text: "MR. DRACULA!!!! NO!!!", speaker: "ishita" }
     ]
 };
 
@@ -1046,8 +1046,8 @@ function triggerLevelClear() {
             setTimeout(() => {
                 const titleText = currentLevel === 1 ? "A Grassy Valley Embrace!" : "A Warm Bridge Reunion!";
                 const msgText = currentLevel === 1 
-                    ? '"Sahibul! I was so scared. Your bravery is unmatched!"'
-                    : '"Oh Sahibul, crossing that sizzling lava for me... You are my hero!"';
+                    ? '"Mr. Dracula! I was so scared. Your bravery is unmatched!"'
+                    : '"Oh Mr. Dracula, crossing that sizzling lava for me... You are my hero!"';
                 
                 document.getElementById('clear-title').innerText = titleText;
                 document.getElementById('clear-message').innerText = msgText;
