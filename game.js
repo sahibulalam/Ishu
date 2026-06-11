@@ -311,8 +311,10 @@ const player = {
     vx: 0,
     vy: 0,
     speed: 4.5,
-    jumpForce: 10.5,
+    jumpForce: 11.0,
     grounded: false,
+    coyoteFrames: 0,       // Coyote time frames
+    jumpBufferFrames: 0,   // Jump buffering frames
     health: 5,
     maxHealth: 5,
     invulnerableFrames: 0,
@@ -598,14 +600,9 @@ function handleResize() {
     const wrapper = document.getElementById('app-container');
     const scaleX = window.innerWidth / 960;
     const scaleY = window.innerHeight / 540;
-    const scale = Math.min(scaleX, scaleY, 1.2); // Cap scaling
-    
-    // Scale body or wrapper if smaller
-    if (window.innerWidth < 960 || window.innerHeight < 540) {
-        wrapper.style.transform = `scale(${scale})`;
-    } else {
-        wrapper.style.transform = 'none';
-    }
+    // Scale wrapper to fill screen fully (maintaining aspect ratio)
+    const scale = Math.min(scaleX, scaleY);
+    wrapper.style.transform = `scale(${scale})`;
 }
 
 // SETUP MENU INTERACTIVES
@@ -614,6 +611,27 @@ function setupMenuHandlers() {
     document.querySelectorAll('button').forEach(btn => {
         btn.addEventListener('click', () => btn.blur());
     });
+
+    // Native Fullscreen API Toggle
+    const fsBtn = document.getElementById('btn-fullscreen');
+    if (fsBtn) {
+        fsBtn.onclick = () => {
+            const container = document.getElementById('app-container');
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                const req = container.requestFullscreen || container.webkitRequestFullscreen;
+                if (req) {
+                    req.call(container).catch(err => {
+                        console.log(`Fullscreen error: ${err.message}`);
+                    });
+                }
+            } else {
+                const exit = document.exitFullscreen || document.webkitExitFullscreen;
+                if (exit) {
+                    exit.call(document);
+                }
+            }
+        };
+    }
 
     const startMenu = document.getElementById('start-menu');
     const levelMenu = document.getElementById('level-menu');
@@ -1160,9 +1178,23 @@ function gameLoop() {
 
 function updatePhysics() {
     if (gameState === STATES.PLAYING) {
-        // Wind push on Level 3
+        // Wind push on Level 3 (reduced to 0.045 for easier control)
         if (currentLevel === 3) {
-            player.vx -= 0.08; // Continuous leftward drift
+            player.vx -= 0.045; // Continuous leftward drift
+        }
+
+        // Handle coyote frames and jump buffer decrements
+        if (player.coyoteFrames > 0) player.coyoteFrames--;
+        if (player.jumpBufferFrames > 0) player.jumpBufferFrames--;
+
+        // Set coyote frames if on ground
+        if (player.grounded) {
+            player.coyoteFrames = 8; // 8 frames of coyote time (generous!)
+        }
+
+        // Set jump buffer if jump key is pressed
+        if (keys.up || keys.space || keys.w) {
+            player.jumpBufferFrames = 6; // Buffer jump for 6 frames
         }
 
         // Horizontal input
@@ -1181,10 +1213,12 @@ function updatePhysics() {
             }
         }
         
-        // Jump input
-        if ((keys.up || keys.space || keys.w) && player.grounded) {
+        // Jump input check combining coyote time and jump buffering
+        if (player.jumpBufferFrames > 0 && (player.grounded || player.coyoteFrames > 0)) {
             player.vy = -player.jumpForce;
             player.grounded = false;
+            player.coyoteFrames = 0;       // Consume coyote frames
+            player.jumpBufferFrames = 0;   // Consume jump buffer
             player.state = 'jumping';
             sfx.playJump();
             
@@ -1264,7 +1298,7 @@ function updatePhysics() {
                     
                     // Trigger crumbling timer if standing on crumble platform
                     if (platform.isCrumbling && platform.crumbleTimer === -1) {
-                        platform.crumbleTimer = 35; // Frames before collapse
+                        platform.crumbleTimer = 48; // Frames before collapse (easier!)
                     }
                 } else {
                     player.y += overlapY;
